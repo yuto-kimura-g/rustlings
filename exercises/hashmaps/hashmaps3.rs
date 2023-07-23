@@ -14,14 +14,17 @@
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
 use std::collections::HashMap;
 
 // A structure to store the goal details of a team.
+#[derive(Debug)]
 struct Team {
     goals_scored: u8,
     goals_conceded: u8,
+}
+
+fn print_type<T>(_: &T) {
+    println!("{}", std::any::type_name::<T>());
 }
 
 fn build_scores_table(results: String) -> HashMap<String, Team> {
@@ -39,6 +42,58 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+
+        // ver:1, 4：自力では無理だった．他の人のやつを見て，get_mut()を使うといけた．
+        // let team_1 = Team {
+        //     goals_scored: team_1_score,
+        //     goals_conceded: team_2_score,
+        // };
+        // let team_2 = Team {
+        //     goals_scored: team_2_score,
+        //     goals_conceded: team_1_score,
+        // };
+        // match scores.get_mut(&team_1_name) {
+        //     Some(team) => {
+        //         team.goals_scored += team_1_score;
+        //         team.goals_conceded += team_2_score;
+        //     }
+        //     None => {
+        //         scores.insert(team_1_name, team_1);
+        //     }
+        // }
+        // match scores.get_mut(&team_2_name) {
+        //     Some(team) => {
+        //         team.goals_scored += team_2_score;
+        //         team.goals_conceded += team_1_score;
+        //     }
+        //     None => {
+        //         scores.insert(team_2_name, team_2);
+        //     }
+        // }
+
+        // ver:2：hintコマンド使ったけどよく分からん
+        // let team_1_ = scores.entry(team_1_name).or_insert(team_1);
+        // print_type(&team_1_);
+        // print_type(&team_1_score);
+        // println!("team1:{:?}, score:{}", team_1_, team_1_score);
+        // team_1_.goals_scored += *team_1_score;
+        // team_1_.conceded += team_2_score;
+        // let team_2 = scores.entry(team_2_name).or_insert(team_2);
+
+        // ver:3：諦めて他の人のやつを見た．なるほど...
+        let teams = [
+            (team_1_name, team_1_score, team_2_score),
+            (team_2_name, team_2_score, team_1_score),
+        ];
+        for (name, scored, conceded) in teams {
+            let init_team = Team {
+                goals_scored: 0,
+                goals_conceded: 0,
+            };
+            let team = scores.entry(name).or_insert(init_team);
+            team.goals_scored += scored;
+            team.goals_conceded += conceded;
+        }
     }
     scores
 }
